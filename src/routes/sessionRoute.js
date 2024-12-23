@@ -28,10 +28,10 @@ router.post('/login',passport.authenticate('login',{failureRedirect: '/api/sessi
 
 router.get('/comprobacion', auth, (req,res)=>{
     const email = req.user.email
-    const firstName = req.user.firstName
-    const lastName = req.user.lastName
+    const first_name = req.user.first_name
+    const last_name = req.user.last_name
     const age = req.user.age
-    res.send({status:'ok', payload:{email,firstName,lastName,age}})
+    res.send({status:'ok', payload:{email,first_name,last_name,age}})
 })
 
 
@@ -40,6 +40,15 @@ router.delete('/logout',(req,res)=>{
         if(!err) return res.send({status:'logout ok'})
 
         res.send({status:'logout error'})
+    })
+})
+
+router.get('/github',passport.authenticate('github'))
+
+router.get('/githubcallback',passport.authenticate('github', {failureRedirect: '/faillogin' }), async (req,res)=>{
+    res.send('logueado con github')
+    router.get('/faillogin',(req,res)=>{
+        res.send({error:'failed login'})
     })
 })
 

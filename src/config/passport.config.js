@@ -2,6 +2,7 @@ import passport, { Passport } from "passport";
 import local from 'passport-local'
 import userModel from "../models/userModel.js";
 import { createHash, isValidPassword } from "../utils.js";
+import GitHubStrategy from 'passport-github2'
 
 
 //aca asignamos una constante con local.strategy 
@@ -10,6 +11,32 @@ const LocalStrategy = local.Strategy
 
 //crearemos un afuncion en la cual tendremos la logica de los endpoints
 const initializePassport = () =>{
+
+    passport.use('github',new GitHubStrategy({
+        clientID:'Iv23liwMbshShD89X71W',
+        clientSecret:'e77ff0ebd235b0dad55af628d014ef5b96af5982',
+        callbackURL:'http://localhost:8080/api/session/githubcallback'
+    },async(_,__,profile,done)=>{
+        try {
+            let user = await userModel.findOne({id_github:profile._json.id})
+            if(user){
+                done(null,user)
+            }
+
+            const newUser = {
+                first_name: profile._json.name,
+                last_name:"",
+                age:0,
+                email:"",
+                password:"",
+                role:'user',
+            }
+            const result = await userModel.create(newUser)
+            done(null,result)
+        } catch (error) {
+            done(error)
+        }
+    }))
 
 //creamos un middleware de passport
         passport.use('register', new LocalStrategy(

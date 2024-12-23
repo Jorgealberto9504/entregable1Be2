@@ -30,7 +30,7 @@ app.use(session({
 initializePassport()
 app.use(passport.initialize())
 app.use(passport.session())
-app.use('/', sessionRoute)
+app.use('/api/session', sessionRoute)
 mongoose.connect(process.env.MONGO)
 
 app.listen(process.env.PORT, ()=>{
